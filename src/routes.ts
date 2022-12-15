@@ -1,57 +1,46 @@
 import { Express, Request, Response } from "express";
+import { login, refreshTokenAuthen } from "./controller/auth.controller";
 import {
   createPostHandler,
-  updatePostHandler,
-  getPostHandler,
   deletePostHandler,
+  getPostHandler,
+  updatePostHandler,
 } from "./controller/post.controller";
 import { createUserHandler } from "./controller/user.controller";
+import { validateRequest } from "./middleware";
 import {
-  createUserSessionHandler,
-  invalidateUserSessionHandler,
-  getUserSessionsHandler,
-} from "./controller/session.controller";
-import { validateRequest, requiresUser } from "./middleware";
+  createPostSchema,
+  deletePostSchema,
+  updatePostSchema,
+} from "./schema/post.schema";
 import {
   createUserSchema,
   createUserSessionSchema,
 } from "./schema/user.schema";
-import {
-  createPostSchema,
-  updatePostSchema,
-  deletePostSchema,
-} from "./schema/post.schema";
 
 export default function (app: Express) {
   app.get("/healthcheck", (req: Request, res: Response) => res.sendStatus(200));
 
   // Register user
-  app.post("/api/users", validateRequest(createUserSchema), createUserHandler);
+  app.post(
+    "/oauth/register",
+    validateRequest(createUserSchema),
+    createUserHandler
+  );
 
   // Login
-  app.post(
-    "/api/sessions",
-    validateRequest(createUserSessionSchema),
-    createUserSessionHandler
-  );
+  app.post("/oauth/token", validateRequest(createUserSessionSchema), login);
 
-  // Get the user's sessions
-  app.get("/api/sessions", requiresUser, getUserSessionsHandler);
-
-  // Logout
-  app.delete("/api/sessions", requiresUser, invalidateUserSessionHandler);
+  // refresh token
+  app.get("/oauth/token/refresh", refreshTokenAuthen);
 
   // Create a post
-  app.post(
-    "/api/posts",
-    [requiresUser, validateRequest(createPostSchema)],
-    createPostHandler
-  );
+  app.post("/api/posts", validateRequest(createPostSchema), createPostHandler);
 
   // Update a post
   app.put(
     "/api/posts/:postId",
-    [requiresUser, validateRequest(updatePostSchema)],
+    validateRequest(updatePostSchema),
     updatePostHandler
   );
 
@@ -61,7 +50,7 @@ export default function (app: Express) {
   // Delete a post
   app.delete(
     "/api/posts/:postId",
-    [requiresUser, validateRequest(deletePostSchema)],
+    validateRequest(deletePostSchema),
     deletePostHandler
   );
 }

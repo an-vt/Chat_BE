@@ -1,7 +1,6 @@
+import { NextFunction, Request, Response } from "express";
 import { get } from "lodash";
-import { Request, Response, NextFunction } from "express";
 import { decode } from "../utils/jwt.utils";
-import { reIssueAccessToken } from "../service/session.service";
 
 const deserializeUser = async (
   req: Request,
@@ -13,31 +12,19 @@ const deserializeUser = async (
     ""
   );
 
-  const refreshToken = get(req, "headers.x-refresh");
-
-  if (!accessToken) return next();
+  if (!accessToken) {
+    return res.status(403).send("A token is required for authentication");
+  }
 
   const { decoded, expired } = decode(accessToken);
+
+  if (expired) {
+    return res.status(401).send("Invalid Token");
+  }
 
   if (decoded) {
     // @ts-ignore
     req.user = decoded;
-
-    return next();
-  }
-
-  if (expired && refreshToken) {
-    const newAccessToken = await reIssueAccessToken({ refreshToken });
-
-    if (newAccessToken) {
-      // Add the new access token to the response header
-      res.setHeader("x-access-token", newAccessToken);
-
-      const { decoded } = decode(newAccessToken);
-
-      // @ts-ignore
-      req.user = decoded;
-    }
 
     return next();
   }

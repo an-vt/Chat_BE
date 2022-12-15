@@ -9,7 +9,7 @@ const port = config.get("port") as number;
 const host = config.get("host") as string;
 
 const app = express();
-app.use(deserializeUser);
+app.use("/api", deserializeUser);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
