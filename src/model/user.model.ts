@@ -1,12 +1,14 @@
-import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import config from "config";
+import mongoose from "mongoose";
 
 export interface UserDocument extends mongoose.Document {
   email: string;
   name: string;
   password: string;
   createdAt: Date;
+  isAvatar: boolean;
+  avatarUrl: string;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -16,6 +18,8 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     password: { type: String, required: true },
+    isAvatar: { type: Boolean, default: false },
+    avatarUrl: { type: String, default: "" },
   },
   { timestamps: true }
 );
