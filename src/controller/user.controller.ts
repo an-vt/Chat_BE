@@ -1,7 +1,12 @@
 import { Request, Response } from "express";
 import { omit } from "lodash";
 import log from "../logger";
-import { createUser, findUser, updateUser } from "../service/user.service";
+import {
+  createUser,
+  findAllUser,
+  findUser,
+  updateUser,
+} from "../service/user.service";
 
 export async function createUserHandler(req: Request, res: Response) {
   try {
@@ -19,13 +24,24 @@ export async function createUserHandler(req: Request, res: Response) {
 export async function updateAvatar(req: any, res: Response) {
   try {
     const userId = req.params.id;
-    console.log("🚀 ", req.file);
     const avatarUrl = req.file.originalname;
 
     await updateUser(userId, { avatarUrl, isAvatar: !!avatarUrl });
     return res.status(200).json({
       msg: "Upload successful",
     });
+  } catch (e: any) {
+    log.error(e);
+    return res.status(409).send(e.message);
+  }
+}
+
+export async function getAllUser(req: Request, res: Response) {
+  try {
+    const userId = req.params.id;
+
+    const users = await findAllUser(userId);
+    return res.status(200).json(users);
   } catch (e: any) {
     log.error(e);
     return res.status(409).send(e.message);
