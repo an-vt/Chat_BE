@@ -3,7 +3,7 @@ export default {
   host: "localhost",
   dbUri: "mongodb://localhost:27017/rest-api",
   saltWorkFactor: 10,
-  accessTokenTtl: "15m",
+  accessTokenTtl: "30m",
   refreshTokenTtl: "1y",
   privateKey: `-----BEGIN RSA PRIVATE KEY-----
   MIICWwIBAAKBgQCQNBc4IP2ewViqE+ZHbnqGoCZFyAUtrxKmO4k/boSvBisJH6BX
