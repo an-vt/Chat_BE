@@ -1,17 +1,27 @@
 import mongoose from "mongoose";
-import Message from "./message.model";
+import MemberSchema, { MemberDocument } from "./member.model";
 
-export interface RoomDocument extends mongoose.Document {
-  messages: string[];
+export type TYPE_ROOM = "GROUP" | "SELF";
+export interface RoomDocument {
+  members: MemberDocument[];
+  unreadCount: number;
+  type: TYPE_ROOM;
 }
 
-const RoomSchema = new mongoose.Schema({
-  _id: {
-    type: String,
+const RoomSchema = new mongoose.Schema(
+  {
+    members: [MemberSchema],
+    unreadCount: {
+      type: mongoose.Schema.Types.Number,
+      required: true,
+      default: 0,
+    },
+    type: {
+      type: mongoose.Schema.Types.String,
+      default: "SELF",
+    },
   },
-  messages: [Message],
-});
+  { timestamps: true }
+);
 
-const Room = mongoose.model<RoomDocument>("Room", RoomSchema);
-
-export default Room;
+export default RoomSchema;

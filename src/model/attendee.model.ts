@@ -1,15 +1,13 @@
-import mongoose, { Schema } from "mongoose";
-import Member from "./attendeeRoom.model";
+import mongoose from "mongoose";
+import MemberSchema, { RoomDocument } from "./room.model";
 
 export interface AttendeeDocument extends mongoose.Document {
-  rooms: string[];
+  _id: string;
+  rooms: RoomDocument[];
 }
 
 const AttendeeSchema = new mongoose.Schema({
-  _id: {
-    type: String,
-  },
-  rooms: [Member],
+  rooms: [MemberSchema],
 });
 
 const Attendee = mongoose.model<AttendeeDocument>("Attendee", AttendeeSchema);
