@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
+import MemberSchema, { MemberDocument } from "./member.model";
 
 export interface MessageDocument extends mongoose.Document {
-  messages: string[];
   content: string;
-  receivers: string[];
+  receivers: MemberDocument[];
   senderUid: string;
   senderName: string;
   type: string;
+  roomId: string;
 }
 
 const MessageSchema = new mongoose.Schema(
@@ -15,11 +16,7 @@ const MessageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.String,
       require: true,
     },
-    receivers: {
-      type: mongoose.Schema.Types.Array,
-      require: true,
-      default: [],
-    },
+    receivers: [MemberSchema],
     senderUid: {
       type: mongoose.Schema.Types.String,
       require: true,
@@ -32,10 +29,12 @@ const MessageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.String,
       require: true,
     },
+    roomId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "room",
+    },
   },
-  { timestamps: true, collection: "message" }
+  { timestamps: true }
 );
 
-const Message = mongoose.model<MessageDocument>("Message", MessageSchema);
-
-export default Message;
+export default MessageSchema;

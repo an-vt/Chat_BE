@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { omit } from "lodash";
 import log from "../logger";
+import { createChat } from "../service/chat.service";
 import {
   createUser,
   findAllUser,
@@ -14,6 +15,11 @@ export async function createUserHandler(req: Request, res: Response) {
     if (emailExisted)
       return res.status(409).json({ msg: "Email already used" });
     const user = await createUser(req.body);
+    const attendee = {
+      _id: user["_id"],
+      rooms: [],
+    };
+    await createChat(attendee);
     return res.send(omit(user.toJSON(), "password"));
   } catch (e: any) {
     log.error(e);
