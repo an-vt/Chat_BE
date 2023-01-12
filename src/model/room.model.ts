@@ -1,16 +1,13 @@
 import mongoose from "mongoose";
-import MemberSchema, { MemberDocument } from "./member.model";
 
 export type TYPE_ROOM = "GROUP" | "SELF";
-export interface RoomDocument {
-  members: MemberDocument[];
+export interface RoomDocument extends mongoose.Document {
   unreadCount: number;
   type: TYPE_ROOM;
 }
 
 const RoomSchema = new mongoose.Schema(
   {
-    members: [MemberSchema],
     unreadCount: {
       type: mongoose.Schema.Types.Number,
       required: true,

@@ -1,6 +1,4 @@
-import { request } from "http";
-import { omit } from "lodash";
-import { DocumentDefinition, FilterQuery } from "mongoose";
+import { DocumentDefinition } from "mongoose";
 import Attendee, { AttendeeDocument } from "../model/attendee.model";
 
 export async function update(input: DocumentDefinition<AttendeeDocument>) {
