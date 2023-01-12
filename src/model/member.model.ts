@@ -1,14 +1,29 @@
 import mongoose from "mongoose";
+import { RoomDocument } from "./room.model";
+import { UserDocument, UserModel, UserSchema } from "./user.model";
 
 export type ROLE = "ADMIN" | "MEMBER";
-export interface MemberDocument extends mongoose.Document {
-  name: String;
+
+export interface Member {
   role: ROLE;
+  roomId: string;
+  user: UserModel;
+}
+export interface MemberDocument extends mongoose.Document {
+  role: ROLE;
+  roomId: RoomDocument["_id"];
+  user: UserDocument;
 }
 
 const MemberSchema = new mongoose.Schema({
-  name: String,
   role: String,
+  roomId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "room",
+  },
+  user: UserSchema,
 });
 
-export default MemberSchema;
+const Member = mongoose.model<MemberDocument>("Member", MemberSchema);
+
+export default Member;
