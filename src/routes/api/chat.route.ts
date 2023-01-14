@@ -4,12 +4,14 @@ import {
   addMemberController,
   getRoomByUserController,
 } from "../../controller/chat.controller";
+import { addMessageController } from "../../controller/message.controller";
 import { validateRequest } from "../../middleware";
 import {
   addMemberSchema,
   createChatSchema,
   getRoomByUserSchema,
 } from "../../schema/chat.schema";
+import { createMessageSchema } from "../../schema/message.schema";
 const chatRouter = express.Router();
 
 chatRouter.post("/add", validateRequest(createChatSchema), addChatController);
@@ -22,6 +24,11 @@ chatRouter.get(
   "/room/user/:userId",
   validateRequest(getRoomByUserSchema),
   getRoomByUserController
+);
+chatRouter.post(
+  "/message",
+  validateRequest(createMessageSchema),
+  addMessageController
 );
 
 export { chatRouter };
