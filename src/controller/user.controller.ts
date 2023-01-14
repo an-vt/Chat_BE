@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { omit } from "lodash";
 import log from "../logger";
-import { createChat } from "../service/chat.service";
+import { createAttendeeService } from "../service/chat.service";
 import {
   createUser,
   findAllUser,
@@ -19,7 +19,7 @@ export async function createUserHandler(req: Request, res: Response) {
       _id: user["_id"],
       rooms: [],
     };
-    await createChat(attendee);
+    await createAttendeeService(attendee);
     return res.send(omit(user.toJSON(), "password"));
   } catch (e: any) {
     log.error(e);

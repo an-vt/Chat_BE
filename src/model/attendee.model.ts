@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import MemberSchema, { RoomDocument } from "./room.model";
+import RoomSchema, { RoomDocument } from "./room.model";
 
 export interface AttendeeDocument extends mongoose.Document {
   _id: string;
@@ -7,7 +7,7 @@ export interface AttendeeDocument extends mongoose.Document {
 }
 
 const AttendeeSchema = new mongoose.Schema({
-  rooms: [MemberSchema],
+  rooms: [RoomSchema],
 });
 
 const Attendee = mongoose.model<AttendeeDocument>("Attendee", AttendeeSchema);
