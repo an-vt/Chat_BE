@@ -1,10 +1,27 @@
 import express from "express";
-import { updateChat } from "../../controller/chat.controller";
+import {
+  addChatController,
+  addMemberController,
+  getRoomByUserController,
+} from "../../controller/chat.controller";
 import { validateRequest } from "../../middleware";
-import { createChatSchema } from "../../schema/chat.schema";
+import {
+  addMemberSchema,
+  createChatSchema,
+  getRoomByUserSchema,
+} from "../../schema/chat.schema";
 const chatRouter = express.Router();
 
-chatRouter.post("/add", validateRequest(createChatSchema), updateChat);
-chatRouter.post("/add/member", validateRequest(createChatSchema), updateChat);
+chatRouter.post("/add", validateRequest(createChatSchema), addChatController);
+chatRouter.post(
+  "/room/add",
+  validateRequest(addMemberSchema),
+  addMemberController
+);
+chatRouter.get(
+  "/room/user/:userId",
+  validateRequest(getRoomByUserSchema),
+  getRoomByUserController
+);
 
 export { chatRouter };
