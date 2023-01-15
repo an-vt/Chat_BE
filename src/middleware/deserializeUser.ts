@@ -18,7 +18,7 @@ const deserializeUser = async (
 
   const { decoded, expired } = decode(accessToken);
 
-  if (expired) {
+  if (expired || !decoded) {
     return res.status(401).send("Invalid Token");
   }
 
