@@ -53,3 +53,12 @@ export async function getAllUser(req: Request, res: Response) {
     return res.status(409).send(e.message);
   }
 }
+
+export async function getMe(req: any, res: Response) {
+  try {
+    return res.status(200).json(omit(req.user, ["iat", "exp", "__v"]));
+  } catch (e: any) {
+    log.error(e);
+    return res.status(409).send(e.message);
+  }
+}
