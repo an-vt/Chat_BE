@@ -23,6 +23,7 @@ const addAttendee = async (
     name: nameRoom,
     unreadCount: 0,
     type,
+    lastUpdatedTimestamp: new Date(),
   };
 
   if (type === "GROUP") {
