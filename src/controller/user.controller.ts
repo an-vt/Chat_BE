@@ -30,7 +30,7 @@ export async function createUserHandler(req: Request, res: Response) {
 export async function updateAvatar(req: any, res: Response) {
   try {
     const userId = req.params.id;
-    const avatarUrl = req.file.originalname;
+    const { avatarUrl } = req.body;
 
     await updateUser(userId, { avatarUrl, isAvatar: !!avatarUrl });
     return res.status(200).json({

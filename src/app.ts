@@ -14,13 +14,14 @@ const app = express();
 
 app.use(
   cors({
-    origin: (origin: string | undefined, callback) => {
-      if (origin && whiteList.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        callback(new Error());
-      }
-    },
+    // origin: (origin: string | undefined, callback) => {
+    //   if (origin && whiteList.indexOf(origin) !== -1) {
+    //     callback(null, true);
+    //   } else {
+    //     callback(new Error());
+    //   }
+    // },
+    origin: "*",
     methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
   })
 );
