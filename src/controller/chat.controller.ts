@@ -15,31 +15,29 @@ import { findUser } from "../service/user.service";
 const addAttendee = async (
   roomId: mongoose.Types.ObjectId,
   type: TYPE_ROOM,
-  attendeeId: mongoose.Types.ObjectId,
+  userId: mongoose.Types.ObjectId,
   nameRoom?: string
 ) => {
-  let room: Partial<RoomDocument> = {
-    _id: roomId,
-    name: nameRoom,
-    unreadCount: 0,
-    type,
-  };
+  const user = await findUser({ _id: userId });
 
-  if (type === "GROUP") {
-    room = {
+  if (user) {
+    let room: Partial<RoomDocument> = {
       _id: roomId,
+      name: nameRoom ?? user.name,
       unreadCount: 0,
       type,
+      avatarUrl: type === "SELF" ? user.avatarUrl : "",
+      lastUpdatedTimestamp: new Date(),
     };
+
+    const attendee: any = {
+      _id: userId,
+      rooms: [room],
+    };
+
+    // update attendee
+    await updateAttendeeService(attendee);
   }
-
-  const attendee: any = {
-    _id: attendeeId,
-    rooms: [room],
-  };
-
-  // update attendee
-  await updateAttendeeService(attendee);
 };
 
 const addMember = async (
@@ -70,19 +68,9 @@ export async function addChatController(req: any, res: Response) {
     const userAuthId = new mongoose.Types.ObjectId(userAuth["_id"]);
     for (const id of memberIds) {
       const memberId = new mongoose.Types.ObjectId(id);
-      let nameGroup = groupName;
-      if (type === "SELF") {
-        const indexReceiver =
-          (memberIds.indexOf(id) + NEXT_INDEX_RECEIVER) % memberIds.length;
-        const idReceiver = memberIds[indexReceiver];
-        const user: LeanDocument<UserDocument> | null = await findUser({
-          _id: idReceiver,
-        });
-        if (user) nameGroup = user?.name;
-      }
       const userId = mongoose.Types.ObjectId(id);
       // add attendee
-      await addAttendee(roomId, type, userId, nameGroup);
+      await addAttendee(roomId, type, userId, groupName);
 
       // add member
       await addMember(roomId, type, userAuthId, memberId);
