@@ -46,21 +46,16 @@ const addMember = async (
   roomId: mongoose.Types.ObjectId,
   type: TYPE_ROOM,
   userAuthId: mongoose.Types.ObjectId,
-  idMember: string
+  idMember: mongoose.Types.ObjectId
 ) => {
   const isAdmin = userAuthId.equals(idMember);
-  const user: LeanDocument<UserDocument> | null = await findUser({
-    _id: idMember,
-  });
-  if (user) {
-    const member: Partial<MemberDocument> = {
-      role: type === "SELF" ? "ADMIN" : isAdmin ? "ADMIN" : "MEMBER",
-      roomId: roomId,
-      user: user as UserDocument,
-    };
+  const member: Partial<MemberDocument> = {
+    role: type === "SELF" ? "ADMIN" : isAdmin ? "ADMIN" : "MEMBER",
+    roomId: roomId,
+    userId: idMember,
+  };
 
-    await addMemberService(member as MemberDocument);
-  }
+  await addMemberService(member as MemberDocument);
 };
 
 export async function addChatController(req: any, res: Response) {
@@ -74,6 +69,7 @@ export async function addChatController(req: any, res: Response) {
     const roomId = mongoose.Types.ObjectId();
     const userAuthId = new mongoose.Types.ObjectId(userAuth["_id"]);
     for (const id of memberIds) {
+      const memberId = new mongoose.Types.ObjectId(id);
       let nameGroup = groupName;
       if (type === "SELF") {
         const indexReceiver =
@@ -89,7 +85,7 @@ export async function addChatController(req: any, res: Response) {
       await addAttendee(roomId, type, userId, nameGroup);
 
       // add member
-      await addMember(roomId, type, userAuthId, id);
+      await addMember(roomId, type, userAuthId, memberId);
     }
 
     return res.status(200).json({ msg: "Add chat successfully" });
@@ -103,16 +99,15 @@ export async function addMemberController(req: any, res: Response) {
   try {
     const userAuth: UserDocument = req?.user;
 
-    const roomId: string = req.body.roomId;
-    const memberId = req.body.memberId;
-    const roomIdObject = mongoose.Types.ObjectId(roomId);
+    const memberIdObject = mongoose.Types.ObjectId(req.body.memberId);
+    const roomIdObject = mongoose.Types.ObjectId(req.body.roomId);
     const type: TYPE_ROOM = "GROUP";
     const userAuthId = new mongoose.Types.ObjectId(userAuth["_id"]);
     // add attendee
-    await addAttendee(roomIdObject, type, memberId);
+    await addAttendee(roomIdObject, type, memberIdObject);
 
     // add member
-    await addMember(roomIdObject, type, userAuthId, memberId);
+    await addMember(roomIdObject, type, userAuthId, memberIdObject);
 
     return res.status(200).json({ msg: "Add member successfully" });
   } catch (e: any) {
