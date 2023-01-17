@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { omit } from "lodash";
+import { get, omit } from "lodash";
 import log from "../logger";
 import { createAttendeeService } from "../service/chat.service";
 import {
@@ -56,7 +56,9 @@ export async function getAllUser(req: Request, res: Response) {
 
 export async function getMe(req: any, res: Response) {
   try {
-    return res.status(200).json(omit(req.user, ["iat", "exp", "__v"]));
+    const userId = get(req.user, "_id");
+    const user = await findUser({ _id: userId });
+    return res.status(200).json(omit(user, ["password"]));
   } catch (e: any) {
     log.error(e);
     return res.status(409).send(e.message);
