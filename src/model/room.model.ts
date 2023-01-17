@@ -5,22 +5,32 @@ export interface RoomDocument extends mongoose.Document {
   name: string;
   unreadCount: number;
   type: TYPE_ROOM;
+  avatarUrl: string;
+  lastUpdatedTimestamp: Date;
 }
 
-const RoomSchema = new mongoose.Schema(
-  {
-    name: String,
-    unreadCount: {
-      type: mongoose.Schema.Types.Number,
-      required: true,
-      default: 0,
-    },
-    type: {
-      type: mongoose.Schema.Types.String,
-      default: "SELF",
-    },
+const RoomSchema = new mongoose.Schema({
+  name: {
+    type: mongoose.Schema.Types.String,
+    require: true,
   },
-  { timestamps: true }
-);
+  unreadCount: {
+    type: mongoose.Schema.Types.Number,
+    required: true,
+    default: 0,
+  },
+  type: {
+    type: mongoose.Schema.Types.String,
+    default: "SELF",
+  },
+  avatarUrl: {
+    type: mongoose.Schema.Types.String,
+    default: "",
+  },
+  lastUpdatedTimestamp: {
+    type: mongoose.Schema.Types.Date,
+    default: new Date(),
+  },
+});
 
 export default RoomSchema;
