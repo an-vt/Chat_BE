@@ -21,14 +21,23 @@ const addAttendee = async (
   const user = await findUser({ _id: userId });
 
   if (user) {
-    let room: Partial<RoomDocument> = {
-      _id: roomId,
-      name: nameRoom ?? user.name,
-      unreadCount: 0,
-      type,
-      avatarUrl: type === "SELF" ? user.avatarUrl : "",
-      lastUpdatedTimestamp: new Date(),
-    };
+    let room: Partial<RoomDocument> = {};
+
+    if (type === "GROUP") {
+      room = {
+        _id: roomId,
+        name: nameRoom,
+        unreadCount: 0,
+        type,
+      };
+    } else {
+      room = {
+        _id: roomId,
+        name: nameRoom,
+        unreadCount: 0,
+        type,
+      };
+    }
 
     const attendee: any = {
       _id: userId,
@@ -69,8 +78,20 @@ export async function addChatController(req: any, res: Response) {
     for (const id of memberIds) {
       const memberId = new mongoose.Types.ObjectId(id);
       const userId = mongoose.Types.ObjectId(id);
+
+      let nameGroup = groupName;
+      if (type === "SELF") {
+        const indexReceiver =
+          (memberIds.indexOf(id) + NEXT_INDEX_RECEIVER) % memberIds.length;
+        const idReceiver = memberIds[indexReceiver];
+        const user: LeanDocument<UserDocument> | null = await findUser({
+          _id: idReceiver,
+        });
+        if (user) nameGroup = user?.name;
+      }
+
       // add attendee
-      await addAttendee(roomId, type, userId, groupName);
+      await addAttendee(roomId, type, userId, nameGroup);
 
       // add member
       await addMember(roomId, type, userAuthId, memberId);
