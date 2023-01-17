@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { RoomDocument } from "./room.model";
-import { UserDocument, UserModel, UserSchema } from "./user.model";
+import { UserDocument, UserModel } from "./user.model";
 
 export type ROLE = "ADMIN" | "MEMBER";
 
@@ -12,7 +12,7 @@ export interface Member {
 export interface MemberDocument extends mongoose.Document {
   role: ROLE;
   roomId: RoomDocument["_id"];
-  user: UserDocument;
+  userId: UserDocument["_id"];
 }
 
 const MemberSchema = new mongoose.Schema({
@@ -21,7 +21,10 @@ const MemberSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "room",
   },
-  user: UserSchema,
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+  },
 });
 
 const Member = mongoose.model<MemberDocument>("Member", MemberSchema);
