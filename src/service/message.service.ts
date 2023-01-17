@@ -10,3 +10,11 @@ export async function createMessageService(
     throw new Error(error);
   }
 }
+
+export async function getAllMessageService(roomId: string) {
+  try {
+    return await Message.find({ roomId: roomId });
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
