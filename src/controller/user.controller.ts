@@ -47,7 +47,9 @@ export async function getAllUser(req: Request, res: Response) {
     const userId = req.params.id;
 
     const users = await findAllUser(userId);
-    return res.status(200).json(users);
+    return res
+      .status(200)
+      .json(users.map((user) => omit(user.toJSON(), "password")));
   } catch (e: any) {
     log.error(e);
     return res.status(409).send(e.message);

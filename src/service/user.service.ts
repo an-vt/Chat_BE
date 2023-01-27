@@ -20,12 +20,7 @@ export async function updateUser(id: string, data: Partial<UserDocument>) {
 }
 
 export async function findAllUser(id: string) {
-  return await User.find({ _id: { $ne: id } }).select([
-    "email",
-    "username",
-    "avatarImage",
-    "_id",
-  ]);
+  return await User.find({ _id: { $ne: id } });
 }
 
 export async function validatePassword({

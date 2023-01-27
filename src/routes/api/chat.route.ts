@@ -2,6 +2,7 @@ import express from "express";
 import {
   addChatController,
   addMemberController,
+  getAllMemberUnAdd,
   getRoomByUserController,
 } from "../../controller/chat.controller";
 import {
@@ -34,5 +35,6 @@ chatRouter.post(
   validateRequest(createMessageSchema),
   addMessageController
 );
+chatRouter.get("/member/unadd", getAllMemberUnAdd);
 
 export { chatRouter };
