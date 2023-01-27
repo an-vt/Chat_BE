@@ -11,8 +11,6 @@ export const createMessageSchema = object({
         ? array().of(string())
         : array().required("MemberIds is required")
     ),
-    senderUId: string().strict().required("Field type is required"),
-    senderName: string().strict().required("Field type is required"),
     type: string()
       .strict()
       .required("Field type is required")
@@ -21,6 +19,8 @@ export const createMessageSchema = object({
         "Must be TEXT or IMAGE",
         (val) => val === "TEXT" || val === "IMAGE"
       ),
+    senderUId: string().strict().required("Field senderUId is required"),
+    senderName: string().strict().required("Field senderName is required"),
     roomId: string().strict().required("Field roomId is required"),
   }),
 });

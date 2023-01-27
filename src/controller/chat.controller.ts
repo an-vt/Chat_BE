@@ -7,16 +7,22 @@ import { RoomDocument, TYPE_ROOM } from "../model/room.model";
 import { UserDocument } from "../model/user.model";
 import {
   getAllRoomByUserService,
+  getAllRoomIdByUserService,
   updateAttendeeService,
 } from "../service/chat.service";
-import { addMemberService } from "../service/member.service";
+import {
+  addMemberService,
+  findMemberNotByRoomService,
+  findMemberService,
+} from "../service/member.service";
 import { findUser } from "../service/user.service";
 
 const addAttendee = async (
   roomId: mongoose.Types.ObjectId,
   type: TYPE_ROOM,
   userId: mongoose.Types.ObjectId,
-  nameRoom?: string
+  nameRoom?: string,
+  avatarUrl?: string
 ) => {
   const user = await findUser({ _id: userId });
 
@@ -36,6 +42,7 @@ const addAttendee = async (
         name: nameRoom,
         unreadCount: 0,
         type,
+        avatarUrl: avatarUrl,
       };
     }
 
@@ -80,6 +87,7 @@ export async function addChatController(req: any, res: Response) {
       const userId = mongoose.Types.ObjectId(id);
 
       let nameGroup = groupName;
+      let avatarUrl = "";
       if (type === "SELF") {
         const indexReceiver =
           (memberIds.indexOf(id) + NEXT_INDEX_RECEIVER) % memberIds.length;
@@ -87,11 +95,14 @@ export async function addChatController(req: any, res: Response) {
         const user: LeanDocument<UserDocument> | null = await findUser({
           _id: idReceiver,
         });
-        if (user) nameGroup = user?.name;
+        if (user) {
+          nameGroup = user?.name;
+          avatarUrl = user?.avatarUrl;
+        }
       }
 
       // add attendee
-      await addAttendee(roomId, type, userId, nameGroup);
+      await addAttendee(roomId, type, userId, nameGroup, avatarUrl);
 
       // add member
       await addMember(roomId, type, userAuthId, memberId);
@@ -128,10 +139,56 @@ export async function addMemberController(req: any, res: Response) {
 export async function getRoomByUserController(req: any, res: Response) {
   try {
     const { userId } = req.params;
+    const { _id } = req.user;
+    const userIdObject = new mongoose.Types.ObjectId(_id);
     const data: LeanDocument<AttendeeDocument> | null =
       await getAllRoomByUserService({
         _id: userId,
       });
+    if (data) {
+      const promises = data.rooms.map((room) =>
+        findMemberService({ roomId: room._id })
+      );
+      const response = await Promise.all(promises);
+      const newData = data.rooms.map((item, index) => ({
+        ...item,
+        members: response[index].filter(
+          (member) => !member.userId.equals(userIdObject)
+        ),
+      }));
+      data.rooms = newData;
+      return res.send(data);
+    }
+  } catch (e: any) {
+    log.error(e);
+    return res.status(400).send(e.message);
+  }
+}
+
+export async function getAllMemberUnAdd(req: any, res: Response) {
+  try {
+    const { _id } = req.user;
+    const rooms = await getAllRoomIdByUserService({
+      _id: _id,
+    });
+    const roomIdTypeGroups: any[] | undefined = rooms?.rooms
+      .filter((room) => room.type === "SELF")
+      .map((room) => room.id);
+
+    const conditions: any[] =
+      roomIdTypeGroups?.map((roomId: string) => ({
+        roomId: {
+          $ne: roomId,
+        },
+      })) ?? [];
+    conditions.push({
+      userId: {
+        $ne: "63c6c8515cb27242708ccec2",
+      },
+    });
+
+    const data = await findMemberNotByRoomService(conditions);
+
     return res.send(data);
   } catch (e: any) {
     log.error(e);

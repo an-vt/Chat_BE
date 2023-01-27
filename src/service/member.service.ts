@@ -1,4 +1,4 @@
-import { DocumentDefinition } from "mongoose";
+import { DocumentDefinition, FilterQuery } from "mongoose";
 import Member, { MemberDocument } from "../model/member.model";
 
 export async function addMemberService(
@@ -9,4 +9,18 @@ export async function addMemberService(
   } catch (error: any) {
     throw new Error(error);
   }
+}
+
+export async function findMemberNotByRoomService(conditions: any[]) {
+  try {
+    return await Member.find({
+      $and: conditions,
+    });
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
+
+export async function findMemberService(query: FilterQuery<MemberDocument>) {
+  return Member.find(query);
 }

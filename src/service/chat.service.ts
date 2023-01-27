@@ -33,3 +33,13 @@ export async function getAllRoomByUserService(
     throw new Error(error);
   }
 }
+
+export async function getAllRoomIdByUserService(
+  query: FilterQuery<AttendeeDocument>
+) {
+  try {
+    return await Attendee.findOne(query);
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
