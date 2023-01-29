@@ -6,16 +6,15 @@ import { MemberDocument } from "../model/member.model";
 import { RoomDocument, TYPE_ROOM } from "../model/room.model";
 import { UserDocument } from "../model/user.model";
 import {
+  addRoomAttendeeService,
   getAllRoomByUserService,
   getAllRoomIdByUserService,
-  updateAttendeeService,
 } from "../service/chat.service";
 import {
   addMemberService,
-  findMemberNotByRoomService,
-  findMemberService,
+  findAllMemberService,
 } from "../service/member.service";
-import { findUser } from "../service/user.service";
+import { findAllUser, findUser } from "../service/user.service";
 
 const addAttendee = async (
   roomId: mongoose.Types.ObjectId,
@@ -52,7 +51,7 @@ const addAttendee = async (
     };
 
     // update attendee
-    await updateAttendeeService(attendee);
+    await addRoomAttendeeService(attendee);
   }
 };
 
@@ -147,7 +146,7 @@ export async function getRoomByUserController(req: any, res: Response) {
       });
     if (data) {
       const promises = data.rooms.map((room) =>
-        findMemberService({ roomId: room._id })
+        findAllMemberService({ roomId: room._id })
       );
       const response = await Promise.all(promises);
       const newData = data.rooms.map((item, index) => ({
@@ -167,29 +166,49 @@ export async function getRoomByUserController(req: any, res: Response) {
 
 export async function getAllMemberUnAdd(req: any, res: Response) {
   try {
-    const { _id } = req.user;
-    const rooms = await getAllRoomIdByUserService({
-      _id: _id,
+    const { _id: userAuthId } = req.user;
+    const attendee = await getAllRoomIdByUserService({
+      _id: userAuthId,
     });
-    const roomIdTypeGroups: any[] | undefined = rooms?.rooms
-      .filter((room) => room.type === "SELF")
-      .map((room) => room.id);
 
-    const conditions: any[] =
-      roomIdTypeGroups?.map((roomId: string) => ({
-        roomId: {
-          $ne: roomId,
+    if (attendee && attendee?.rooms?.length > 0) {
+      const filters: any[] =
+        attendee?.rooms
+          .filter((room) => room.type === "SELF")
+          .map((room) => ({
+            $and: [
+              { roomId: room._id },
+              {
+                userId: {
+                  $ne: userAuthId,
+                },
+              },
+            ],
+          })) ?? [];
+      const member = await findAllMemberService({
+        $or: filters,
+      });
+      const filterUsers =
+        member.map((member) => ({
+          _id: {
+            $ne: member.userId,
+          },
+        })) ?? [];
+
+      // filter remove user auth
+      filterUsers.push({
+        _id: {
+          $ne: userAuthId,
         },
-      })) ?? [];
-    conditions.push({
-      userId: {
-        $ne: "63c6c8515cb27242708ccec2",
-      },
-    });
-
-    const data = await findMemberNotByRoomService(conditions);
-
-    return res.send(data);
+      });
+      const users = await findAllUser({
+        $and: filterUsers,
+      });
+      return res.send(users);
+    } else {
+      const userNotAuths = await findAllUser({ _id: { $ne: userAuthId } });
+      return res.send(userNotAuths);
+    }
   } catch (e: any) {
     log.error(e);
     return res.status(400).send(e.message);

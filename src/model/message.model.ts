@@ -1,5 +1,14 @@
 import mongoose from "mongoose";
 
+export interface MessageModel {
+  content: string;
+  receivers: string[];
+  senderUId: string;
+  senderName: string;
+  type: string;
+  roomId: string;
+  sendingTimestamp: string;
+}
 export interface MessageDocument extends mongoose.Document {
   content: string;
   receivers: string[];
@@ -7,6 +16,7 @@ export interface MessageDocument extends mongoose.Document {
   senderName: string;
   type: string;
   roomId: string;
+  sendingTimestamp: string;
 }
 
 const MessageSchema = new mongoose.Schema({

@@ -4,7 +4,7 @@ import { UserDocument, UserModel } from "./user.model";
 
 export type ROLE = "ADMIN" | "MEMBER";
 
-export interface Member {
+export interface MemberModel {
   role: ROLE;
   roomId: string;
   user: UserModel;
