@@ -1,19 +1,22 @@
 import config from "config";
 import cors from "cors";
 import express from "express";
-import { getAllMessageService } from "./service/message.service";
 import { Server } from "socket.io";
+import { getAllMessageService } from "./service/message.service";
 // import {
 //   ClientToServerEvents,
 //   InterServerEvents,
 //   ServerToClientEvents,
 //   SocketData,
 // } from "types/socket-io";
+import { MessageModel } from "model/message.model";
+import { getAllRoomIdByUserService } from "service/chat.service";
+import { findAllMemberService } from "service/member.service";
+import { findAllUser } from "service/user.service";
 import connect from "./db/connect";
 import log from "./logger";
 import { deserializeUser } from "./middleware";
 import router from "./routes";
-import { MessageModel } from "model/message.model";
 
 const globalAny: any = global;
 const port = config.get("port") as number;
@@ -62,20 +65,64 @@ io.on("connection", (socket) => {
   globalAny.chatSocket = socket;
 
   socket.on("add-user", (userId: any) => {
-    console.log("🚀 ~ file: app.ts:65 ~ socket.on ~ userId", userId);
-    globalAny.onlineUsers.set(userId, socket.id);
+    const socketId = socket.id;
+    globalAny.onlineUsers.set(userId, socketId);
+  });
+  socket.on("add-member", async (userAuthId: string) => {
+    try {
+      const attendee = await getAllRoomIdByUserService({
+        _id: userAuthId,
+      });
+
+      if (attendee && attendee?.rooms?.length > 0) {
+        const filters: any[] =
+          attendee?.rooms
+            .filter((room) => room.type === "SELF")
+            .map((room) => ({
+              $and: [
+                { roomId: room._id },
+                {
+                  userId: {
+                    $ne: userAuthId,
+                  },
+                },
+              ],
+            })) ?? [];
+        const member = await findAllMemberService({
+          $or: filters,
+        });
+        const filterUsers =
+          member.map((member) => ({
+            _id: {
+              $ne: member.userId,
+            },
+          })) ?? [];
+
+        // filter remove user auth
+        filterUsers.push({
+          _id: {
+            $ne: userAuthId,
+          },
+        });
+        const users = await findAllUser({
+          $and: filterUsers,
+        });
+        io.sockets.emit("list-member", users);
+      } else {
+        const userNotAuths = await findAllUser({ _id: { $ne: userAuthId } });
+        io.sockets.emit("list-member", userNotAuths);
+      }
+    } catch (error: any) {
+      log.error(error.message);
+    }
   });
   socket.on("send-msg", async (data: MessageModel) => {
     const { roomId, senderUId } = data;
     const sendUserSocket = globalAny.onlineUsers.get(senderUId);
-    console.log(
-      "🚀 ~ file: app.ts:70 ~ socket.on ~ sendUserSocket",
-      sendUserSocket
-    );
     if (sendUserSocket) {
       try {
         const data = await getAllMessageService(roomId);
-        socket.emit("msg-receive", data);
+        io.sockets.emit("msg-receive", data);
       } catch (error: any) {
         log.error(error.message);
       }
