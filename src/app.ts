@@ -1,12 +1,15 @@
 import config from "config";
 import cors from "cors";
 import express from "express";
-import { whiteList } from "./common/constants";
+import { Server } from "socket.io";
 import connect from "./db/connect";
 import log from "./logger";
 import { deserializeUser } from "./middleware";
 import router from "./routes";
+import { onConnection } from "./socket";
 
+const globalAny: any = global;
+globalAny.onlineUsers = new Map();
 const port = config.get("port") as number;
 const host = config.get("host") as string;
 
@@ -30,8 +33,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(router);
 
-app.listen(port, host, () => {
+const server = app.listen(port, host, () => {
   log.info(`Server listing at http://${host}:${port}`);
 
   connect();
 });
+
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    credentials: true,
+  },
+});
+
+io.on("connection", onConnection(io));
+
+export { globalAny };

@@ -21,6 +21,10 @@ export async function findMemberNotByRoomService(conditions: any[]) {
   }
 }
 
-export async function findMemberService(query: FilterQuery<MemberDocument>) {
+export async function findAllMemberService(query: FilterQuery<MemberDocument>) {
   return Member.find(query);
+}
+
+export async function findMemberService(query: FilterQuery<MemberDocument>) {
+  return Member.findOne(query);
 }

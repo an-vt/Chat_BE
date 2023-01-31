@@ -1,6 +1,12 @@
 import mongoose from "mongoose";
 
 export type TYPE_ROOM = "GROUP" | "SELF";
+
+export interface RoomAdd {
+  memberIds: string[];
+  type: TYPE_ROOM;
+  groupName?: string;
+}
 export interface RoomDocument extends mongoose.Document {
   name: string;
   unreadCount: number;

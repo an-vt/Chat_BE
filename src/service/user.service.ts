@@ -19,8 +19,8 @@ export async function updateUser(id: string, data: Partial<UserDocument>) {
   return User.findByIdAndUpdate(id, data);
 }
 
-export async function findAllUser(id: string) {
-  return await User.find({ _id: { $ne: id } });
+export async function findAllUser(filter: FilterQuery<UserDocument>) {
+  return await User.find(filter);
 }
 
 export async function validatePassword({

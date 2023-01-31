@@ -1,7 +1,12 @@
-import { DocumentDefinition, FilterQuery } from "mongoose";
+import {
+  DocumentDefinition,
+  FilterQuery,
+  QueryOptions,
+  UpdateQuery,
+} from "mongoose";
 import Attendee, { AttendeeDocument } from "../model/attendee.model";
 
-export async function updateAttendeeService(
+export async function addRoomAttendeeService(
   input: DocumentDefinition<AttendeeDocument>
 ) {
   try {
@@ -39,6 +44,18 @@ export async function getAllRoomIdByUserService(
 ) {
   try {
     return await Attendee.findOne(query);
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}
+
+export async function updateAvatarRoomAttendeeService(
+  filter: FilterQuery<AttendeeDocument>,
+  update: UpdateQuery<AttendeeDocument>,
+  options: QueryOptions
+) {
+  try {
+    return await Attendee.updateMany(filter, update, options);
   } catch (error: any) {
     throw new Error(error);
   }
