@@ -55,8 +55,6 @@ export async function updateAvatar(req: any, res: Response) {
       members.push(...memberUpdate);
     }
 
-    console.log("########", members);
-
     for (const member of members) {
       await updateAvatarRoomAttendeeService(
         {

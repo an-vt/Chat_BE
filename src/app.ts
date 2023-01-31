@@ -39,79 +39,9 @@ const server = app.listen(port, host, () => {
   connect();
 });
 
-// globalAny.onlineUsers = new Map();
-// io.on("connection", (socket) => {
-//   globalAny.chatSocket = socket;
-
-//   socket.on("add-user", (userId: any) => {
-//     const socketId = socket.id;
-//     globalAny.onlineUsers.set(userId, socketId);
-//   });
-//   socket.on("add-member", async (userAuthId: string) => {
-//     try {
-//       const attendee = await getAllRoomIdByUserService({
-//         _id: userAuthId,
-//       });
-
-//       if (attendee && attendee?.rooms?.length > 0) {
-//         const filters: any[] =
-//           attendee?.rooms
-//             .filter((room) => room.type === "SELF")
-//             .map((room) => ({
-//               $and: [
-//                 { roomId: room._id },
-//                 {
-//                   userId: {
-//                     $ne: userAuthId,
-//                   },
-//                 },
-//               ],
-//             })) ?? [];
-//         const member = await findAllMemberService({
-//           $or: filters,
-//         });
-//         const filterUsers =
-//           member.map((member) => ({
-//             _id: {
-//               $ne: member.userId,
-//             },
-//           })) ?? [];
-
-//         // filter remove user auth
-//         filterUsers.push({
-//           _id: {
-//             $ne: userAuthId,
-//           },
-//         });
-//         const users = await findAllUser({
-//           $and: filterUsers,
-//         });
-//         io.sockets.emit("list-member", users);
-//       } else {
-//         const userNotAuths = await findAllUser({ _id: { $ne: userAuthId } });
-//         io.sockets.emit("list-member", userNotAuths);
-//       }
-//     } catch (error: any) {
-//       log.error(error.message);
-//     }
-//   });
-//   socket.on("send-msg", async (data: MessageModel) => {
-//     const { roomId, senderUId } = data;
-//     const sendUserSocket = globalAny.onlineUsers.get(senderUId);
-//     if (sendUserSocket) {
-//       try {
-//         const data = await getAllMessageService(roomId);
-//         io.sockets.emit("msg-receive", data);
-//       } catch (error: any) {
-//         log.error(error.message);
-//       }
-//     }
-//   });
-// });
-
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
     credentials: true,
   },
 });
