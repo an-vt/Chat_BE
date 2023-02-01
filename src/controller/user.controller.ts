@@ -1,3 +1,4 @@
+import { avatarBase64GroupDefault } from "../common/constants";
 import { Request, Response } from "express";
 import { get, omit } from "lodash";
 import { MemberDocument } from "model/member.model";
@@ -20,7 +21,10 @@ export async function createUserHandler(req: Request, res: Response) {
     const emailExisted = await findUser({ email: req.body.email });
     if (emailExisted)
       return res.status(409).json({ msg: "Email already used" });
-    const user = await createUser(req.body);
+    const user = await createUser({
+      ...req.body,
+      avatarUrl: avatarBase64GroupDefault,
+    });
     const attendee = {
       _id: user["_id"],
       rooms: [],
