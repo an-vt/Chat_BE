@@ -36,9 +36,9 @@ module.exports = {
     status: 200,
   },
 
-  onlyAdmin: extend({}, this.Forbidden, {
-    message: "Only admins are allowed to do this!",
-  }),
+  // onlyAdmin: extend({}, this?.Forbidden, {
+  //   message: "Only admins are allowed to do this!",
+  // }),
 
   NoPermesssion: extend(
     {},
@@ -49,34 +49,34 @@ module.exports = {
     }
   ),
 
-  invalidId: extend({}, this.BadRequest, {
-    message: "Invalid Id parameter",
-  }),
+  // invalidId: extend({}, this?.BadRequest, {
+  //   message: "Invalid Id parameter",
+  // }),
 
-  invalidSearchTerm: extend({}, this.BadRequest, {
-    message: "Invalid search term",
-  }),
+  // invalidSearchTerm: extend({}, this?.BadRequest, {
+  //   message: "Invalid search term",
+  // }),
 
   missingAttr(attrs: Array<string>) {
-    return extend({}, this.BadRequest, {
+    return extend({}, this?.BadRequest, {
       message: `Attribute(s) (${attrs.join(",")}) seem(s) to be missing`,
     });
   },
 
   unwantedAttr(attrs: Array<string>) {
-    return extend({}, this.BadRequest, {
+    return extend({}, this?.BadRequest, {
       message: `Attribute(s) (${attrs.join(",")}) can't be updated`,
     });
   },
 
   uniqueAttr(attrs: Array<string>) {
-    return extend({}, this.BadRequest, {
+    return extend({}, this?.BadRequest, {
       message: `Attribute(s) [${attrs.join(",")}] must be unique`,
     });
   },
 
   custom(msg: string) {
-    return extend({}, this.BadRequest, {
+    return extend({}, this?.BadRequest, {
       message: msg,
     });
   },
@@ -84,37 +84,37 @@ module.exports = {
   // REST
 
   addFailure() {
-    return extend({}, this.BadRequest, {
+    return extend({}, this?.BadRequest, {
       message: "Item WAS NOT added",
     });
   },
 
   deleteFailure() {
-    return extend({}, this.BadRequest, {
+    return extend({}, this?.BadRequest, {
       message: "Item WAS NOT deleted",
     });
   },
 
   updateFailure() {
-    return extend({}, this.BadRequest, {
+    return extend({}, this?.BadRequest, {
       message: "Item WAS NOT updated",
     });
   },
 
   addSuccess() {
-    return extend({}, this.Success, {
+    return extend({}, this?.Success, {
       message: "Item added successfully",
     });
   },
 
   deleteSuccess() {
-    return extend({}, this.Success, {
+    return extend({}, this?.Success, {
       message: "Item deleted successfully",
     });
   },
 
   updateSuccess() {
-    return extend({}, this.Success, {
+    return extend({}, this?.Success, {
       message: "Item updated successfully",
     });
   },
