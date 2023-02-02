@@ -1,7 +1,10 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 export default {
-  port: 1337,
-  host: "localhost",
-  dbUri: "mongodb://localhost:27017/chat",
+  port: process.env.PORT,
+  host: process.env.HOST,
+  dbUri: process.env.DB_URI,
   saltWorkFactor: 10,
   accessTokenTtl: "30m",
   refreshTokenTtl: "1y",
