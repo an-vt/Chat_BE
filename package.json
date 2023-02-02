@@ -4,7 +4,7 @@
   "main": "src/app.ts",
   "license": "MIT",
   "scripts": {
-    "start": "node dist/src/app.js",
+    "start": "set NODE_ENV=development&& node dist/src/app.js",
     "postinstall": "tsc"
   },
   "dependencies": {
