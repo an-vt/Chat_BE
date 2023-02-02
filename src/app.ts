@@ -7,7 +7,9 @@ import log from "./logger";
 import { deserializeUser } from "./middleware";
 import router from "./routes";
 import { onConnection } from "./socket";
+import * as dotenv from "dotenv";
 
+dotenv.config();
 const globalAny: any = global;
 globalAny.onlineUsers = new Map();
 const port = config.get("port") as number;
