@@ -7,13 +7,12 @@ import log from "./logger";
 import { deserializeUser } from "./middleware";
 import router from "./routes";
 import { onConnection } from "./socket";
-import * as dotenv from "dotenv";
+import dotenv from "dotenv";
 
 dotenv.config();
 const globalAny: any = global;
 globalAny.onlineUsers = new Map();
 const port = config.get("port") as number;
-const host = config.get("host") as string;
 
 const app = express();
 
@@ -35,10 +34,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(router);
 
-const server = app.listen(port, host, () => {
-  log.info(`Server listing at http://${host}:${port}`);
+const server = app.listen(port, async () => {
+  log.info(`Server listing at http://localhost:${port}`);
 
-  connect();
+  await connect();
 });
 
 const io = new Server(server, {

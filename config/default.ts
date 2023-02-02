@@ -1,10 +1,6 @@
-import * as dotenv from "dotenv";
-dotenv.config();
-
 export default {
-  port: process.env.PORT,
-  host: process.env.HOST,
-  dbUri: process.env.DB_URI,
+  port: 1337,
+  dbUri: "mongodb+srv://anvt:Aa@123456@cluster0.tpbxmux.mongodb.net/chat",
   saltWorkFactor: 10,
   accessTokenTtl: "30m",
   refreshTokenTtl: "1y",
