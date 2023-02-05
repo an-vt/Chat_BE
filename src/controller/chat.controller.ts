@@ -1,3 +1,4 @@
+import { avatarGroupBase64Default } from "common/constants";
 import { Response } from "express";
 import mongoose, { LeanDocument } from "mongoose";
 import log from "../logger";
@@ -34,6 +35,7 @@ const addAttendee = async (
         name: nameRoom,
         unreadCount: 0,
         type,
+        avatarUrl: avatarGroupBase64Default,
       };
     } else {
       room = {

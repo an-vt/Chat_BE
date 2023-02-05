@@ -1,8 +1,8 @@
-import { avatarBase64GroupDefault } from "../common/constants";
 import { Request, Response } from "express";
 import { get, omit } from "lodash";
 import { MemberDocument } from "model/member.model";
 import mongoose from "mongoose";
+import { avatarBase64Default } from "../common/constants";
 import log from "../logger";
 import {
   createAttendeeService,
@@ -23,7 +23,7 @@ export async function createUserHandler(req: Request, res: Response) {
       return res.status(409).json({ msg: "Email already used" });
     const user = await createUser({
       ...req.body,
-      avatarUrl: avatarBase64GroupDefault,
+      avatarUrl: avatarBase64Default,
     });
     const attendee = {
       _id: user["_id"],
