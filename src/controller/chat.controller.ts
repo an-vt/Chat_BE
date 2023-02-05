@@ -1,4 +1,4 @@
-import { avatarGroupBase64Default } from "common/constants";
+import { avatarGroupBase64Default } from "../common/constants";
 import { Response } from "express";
 import mongoose, { LeanDocument } from "mongoose";
 import log from "../logger";
