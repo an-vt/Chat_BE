@@ -97,8 +97,8 @@ const listRoomSocket = (
 ) => {
   return async function listRoomSocket(data: RoomAdd) {
     for (const memberId of data.memberIds) {
-      const senderUserSocket = globalAny.onlineUsers.get(memberId);
-      if (senderUserSocket) {
+      const userSocketId = globalAny.onlineUsers.get(memberId);
+      if (userSocketId) {
         try {
           const userIdObject = new mongoose.Types.ObjectId(memberId);
           const results: LeanDocument<AttendeeDocument> | null =
@@ -118,7 +118,7 @@ const listRoomSocket = (
             }));
             results.rooms = newData;
           }
-          socket.to(senderUserSocket).emit("list-room-receive", results);
+          socket.to(userSocketId).emit("list-room-receive", results);
         } catch (e: any) {
           log.error(e);
         }
