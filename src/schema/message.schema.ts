@@ -21,6 +21,9 @@ export const createMessageSchema = object({
       ),
     senderUId: string().strict().required("Field senderUId is required"),
     senderName: string().strict().required("Field senderName is required"),
+    senderAvatarUrl: string()
+      .strict()
+      .required("Field senderAvatarUrl is required"),
     roomId: string().strict().required("Field roomId is required"),
   }),
 });

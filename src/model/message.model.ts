@@ -5,6 +5,7 @@ export interface MessageModel {
   receivers: string[];
   senderUId: string;
   senderName: string;
+  senderAvatarUrl: string;
   type: string;
   roomId: string;
   sendingTimestamp: string;
@@ -14,6 +15,7 @@ export interface MessageDocument extends mongoose.Document {
   receivers: string[];
   senderUId: string;
   senderName: string;
+  senderAvatarUrl: string;
   type: string;
   roomId: string;
   sendingTimestamp: string;
