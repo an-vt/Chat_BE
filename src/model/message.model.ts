@@ -38,6 +38,10 @@ const MessageSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.String,
     require: true,
   },
+  senderAvatarUrl: {
+    type: mongoose.Schema.Types.String,
+    require: true,
+  },
   type: {
     type: mongoose.Schema.Types.String,
     require: true,
