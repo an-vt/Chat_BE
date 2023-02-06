@@ -1,6 +1,6 @@
-import { avatarGroupBase64Default } from "../common/constants";
 import { Response } from "express";
 import mongoose, { LeanDocument } from "mongoose";
+import { avatarGroupBase64Default } from "../common/constants";
 import log from "../logger";
 import { AttendeeDocument } from "../model/attendee.model";
 import { MemberDocument } from "../model/member.model";
@@ -187,9 +187,12 @@ export async function getAllMemberUnAdd(req: any, res: Response) {
               },
             ],
           })) ?? [];
-      const member = await findAllMemberService({
-        $or: filters,
-      });
+      const member =
+        filters.length > 0
+          ? await findAllMemberService({
+              $or: filters,
+            })
+          : [];
       const filterUsers =
         member.map((member) => ({
           _id: {
