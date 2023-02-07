@@ -60,3 +60,15 @@ export async function updateAvatarRoomAttendeeService(
     throw new Error(error);
   }
 }
+
+export async function updateUnReadCountRoomAttendeeService(
+  filter: FilterQuery<AttendeeDocument>,
+  update: UpdateQuery<AttendeeDocument>,
+  options: QueryOptions
+) {
+  try {
+    return await Attendee.updateOne(filter, update, options);
+  } catch (error: any) {
+    throw new Error(error);
+  }
+}

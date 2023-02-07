@@ -8,7 +8,9 @@ import {
 
 export async function addMessageController(req: any, res: Response) {
   try {
+    // add message
     await createMessageService(req.body as MessageDocument);
+
     return res.status(200).json({ msg: "Add message successfully" });
   } catch (e: any) {
     log.error(e);
